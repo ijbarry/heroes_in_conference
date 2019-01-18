@@ -1,0 +1,12 @@
+matrix:
+  include:
+    - language: rust
+      before_script:
+        - cd backend/
+      script:
+        - cargo test
+# TODO add Unity to build matrix 
+
+notifications:
+ slack:
+    on_success: always 
