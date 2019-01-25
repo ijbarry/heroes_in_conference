@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: DefaultCompany
-  productName: Kilo
+  productName: frontend
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -613,7 +613,7 @@ PlayerSettings:
   apiCompatibilityLevel: 6
   cloudProjectId: d7e1fb81-1215-478c-9f78-442d19146216
   framebufferDepthMemorylessMode: 0
-  projectName: Kilo
+  projectName: frontend
   organizationId: alaif
   cloudEnabled: 0
   enableNativePlatformBackendsForNewInputSystem: 0
