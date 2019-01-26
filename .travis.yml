@@ -2,9 +2,24 @@ matrix:
   include:
   - language: java
     before_script:
-    - cd backend/
+    - cd ./backend/
     script:
     - mvn test
+  - language: objective-c
+    osx_image: xcode9.2
+    rvm:
+    - 2.2
+    cache:
+      directories:
+      - ./frontend/cache/
+    before_install:
+    - chmod a+x ./ci/install_unity.sh
+    - chmod a+x ./ci/build_frontend.sh
+    - cd ./frontend/
+    install:
+    - ../ci/install_unity.sh
+    script:
+    - ../ci/build_frontend.sh
 notifications:
   slack:
     secure: k0lYsJf2kVl84nWTFHY7T6hCL+3f9euBzpW+4PuvKGAhAB37MNNpF5y3ILEG5yZTHK8Y4lg65D2ItDPhYeanRY6kPJn/Oj0G6NgD4o0gZ68lpYGsXzpJ41L3kk+teVS8qGvmf101yO5mWZkpgzHl4bnDPB6IGxCXuBViAaP4SLcWcpQoHTF3YDQWnFp6njRpFmIvQ6kMTUJF4IXOoLcvD/Ly1wVvUXyTiz430Iapif5lygF0E0jRUzWx6LC5BiUZMBw3VqrWeDEa4BmwJq+O/8LeVZ0Mf3jVpuT+l8brejYg8ph6jREkzpBWtYC3m1lM/t1VUBYM+BikhCbNLcH3pnWgsPHUDZa3oXtHiiTNd2BnNByIyYceGDYfBUYzR9di2BukFa+5gF+fuONwmmYQTI9ZNMTwjb2Zt6aA2Jr99nbOvwNWnecDwsi/5L8ETH5+7ahWCHZC8ELeTeZaOauYVpq2TOdVNFdCOeqrMMz2tIi6VT5t+xtkghFnddCdDEEd7P4tkE8pyyynqMX5irTcPgsnrDWnV9qML/To/glOP2d/6/8YHmtm4vedMGdNRvbtJRjb6djQd1IXcK6wlLcDFvmrCf5Af3f+7DA84U+h3DIJ/tL76WRERsYz3BdGNATh2ZNhNHPebSj0kYntzyhK9oqh4G/Kfk3KbH1PnRFTHRA=
