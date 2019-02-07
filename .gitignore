@@ -144,7 +144,51 @@ local.properties
 
 cache/
 
-
-# Properly ignore Intellij Stuff
+# IntelliJ 
 *.iml
 .idea
+
+# NUnit
+*.VisualState.xml
+TestResult.xml
+NUnit.3.11.0/
+
+# Unity Assets
+AssetBundles/
+Assets/AssetBundleManager/
+Assets/AssetBundleManager.meta
+Assets/AssetBundleTest/
+Assets/AssetBundleTest.meta
+Assets/Resources/
+Assets/Resources.meta
+Assets/UnityVS/
+Assets/UnityVS.meta
+Assets/OnDemandLoading.unity
+Assets/OnDemandLoading.unity.meta
+Assets/Views/OnDemandLoadingExample.cs
+Assets/Views/OnDemandLoadingExample.cs.meta
+Assets/Views/OnDemandLoadingExample.xml
+Assets/Views/OnDemandLoadingExample.xml.meta
+Assets/Views/TestView.cs
+Assets/Views/TestView.cs.meta
+Assets/Views/TestView.xml
+Assets/Views/TestView.xml.meta
+Assets/TextMesh Pro
+
+# Unity generated
+Temp/
+obj/
+UnityGenerated/
+Library/
+
+# Visual Studio / MonoDevelop generated
+ExportedObj/
+*.svd
+*.userprefs
+*.csproj
+*.pidb
+*.suo
+*.sln
+*.user
+*.unityproj
+*.booproj
