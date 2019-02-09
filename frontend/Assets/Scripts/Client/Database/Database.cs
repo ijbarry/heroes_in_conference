@@ -1,12 +1,37 @@
 ﻿using System;
 using System.Linq;
 using System.Collections;
+using System.IO;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 
 [Serializable]
 public class Database {
-    private Dictionary<long, DBMap> maps;
-    private Dictionary<long, DBEvent> events;
+    public Database() {
+        maps = new Dictionary<long, DBMap>();
+        events = new Dictionary<long, DBEvent>();
+        achievements = new Dictionary<long, DBAchievement>();
+    }
+    public static Database LoadDatabase(string path) {
+        if (!File.Exists(path))
+            return new Database();
+
+        using (StreamReader streamReader = new StreamReader(path)) {
+            BinaryFormatter binaryFormatter = new BinaryFormatter();
+            Database db;
+            try {
+                db = (Database)binaryFormatter.Deserialize(streamReader.BaseStream);
+                // TODO: catch error if not DB object
+            }
+            catch (SerializationException ex) {
+                throw new SerializationException(((object)ex).ToString() + "\n" + ex.Source);
+            }
+            return db;
+        }
+    }
+
+    #region Achievements
     private Dictionary<long, DBAchievement> achievements;
 
     public void SetAchievement(long achievementID, bool wonAchievement = true) {
@@ -26,4 +51,18 @@ public class Database {
     public List<DBAchievement> GetAllWonAchievements() {
         return achievements.Values.Where(a => a.Won).ToList();
     }
+    #endregion
+
+    #region Events
+    private Dictionary<long, DBEvent> events;
+
+    public void SetGoingEvent(long eventID, bool isGoing = true) {
+        events[eventID].UserGoing = isGoing;
+    }
+    #endregion
+
+    #region Maps
+    private Dictionary<long, DBMap> maps;
+
+    #endregion
 }

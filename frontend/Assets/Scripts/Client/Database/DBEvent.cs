@@ -21,6 +21,9 @@ public class DBEvent : IComparable<DBEvent> {
     private string eventDescription;
     public string EventDescription { get => eventDescription; }
 
+    private bool userGoing;
+    public bool UserGoing { get => userGoing; set => userGoing = value; }
+
     public int CompareTo(DBEvent other) {
         return StartTime.CompareTo(other.StartTime);
     }
