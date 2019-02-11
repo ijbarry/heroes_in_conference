@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class NetworkDatabase : MonoBehaviour {
-    public static NetworkDatabase NDB { get => NDB; private set => NDB = value; }
+    private static NetworkDatabase ndb;
+    public static NetworkDatabase NDB { get => ndb; private set => ndb = value; }
     private Database localDb;
     private Client client;
 
@@ -30,6 +31,10 @@ public class NetworkDatabase : MonoBehaviour {
         localDb.SetAchievement(achievementID, wonAchievement);
         if(wonAchievement)
             client.CompleteAchievement(achievementID);
+    }
+
+    public List<DBEvent> GetCalendar() {
+        return localDb.GetCalendar();
     }
 
     void Update() {
