@@ -2,16 +2,18 @@ package uk.ac.cam.cl.kilo;
 
 import java.io.*;
 import static spark.Spark.*;
+import java.security.SecureRandom;
+import java.util.Random;
 
 public class Server{
-  public static void main(String args[]){
+  private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
 
+  public static void main(String args[]){
      get("/facebook/register/stage1", (request, response) -> {
       String state = RandomStringUtils.random(32, true, true);// random state
       response.header("state",state);
       return;
     });
-
     get("/facebook/register/stage2", (request, response) -> {
             String state = request.queryParamOrDefault("state","");
             if(state == ""){
@@ -33,7 +35,6 @@ public class Server{
             }
             return;
     });
-
     get("/facebook/register/stage3", (request, response) -> {
             String state = request.queryParamOrDefault("state","");
             String code = request.queryParamOrDefault("code","");
@@ -65,5 +66,34 @@ public class Server{
             //will be storing user data in DB so no need to consider expired token- only user once to get data
         }
     });
+  }
+
+  /**
+   * Securely generates a random hex string.
+   *
+   * @param length the number of bytes of hex to generate
+   * @return the hex string
+   */
+  public static String generateID(int length) {
+    final Random r = new SecureRandom();
+    byte[] state = new byte[length];
+    r.nextBytes(state);
+    return bytesToHex(state);
+  }
+
+  /**
+   * Converts a given byte array into a hex string.
+   *
+   * @param bytes The bytes to convert to hex
+   * @return The resulting hex string
+   */
+  public static String bytesToHex(byte[] bytes) {
+    char[] hexChars = new char[bytes.length * 2];
+    for (int j = 0; j < bytes.length; j++) {
+      int v = bytes[j] & 0xFF;
+      hexChars[j * 2] = HEX_ARRAY[v >>> 4];
+      hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
+    }
+    return new String(hexChars).toLowerCase();
   }
 }

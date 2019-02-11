@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Test dataset for the database (Nathan Corbyn) -->
+<dataset>
+  <users id="0" name="nathan"/>
+  <users id="1" name="jonas"/>
+  <users id="2" name="paul"/>
+  <users id="3" name="india"/>
+  <users id="4" name="benjamin"/>
+  <users id="5" name="razvan"/>
+
+  <!-- Achievements table -->
+  <achievements id="0" name="opened" reward="100"/>
+  <achievements id="1" name="closed" reward="200"/>
+
+  <!-- Achieved table -->
+  <achieved user_id="0" achievement_id="0"/>
+  <achieved user_id="0" achievement_id="1"/>
+  <achieved user_id="1" achievement_id="0"/>
+  <achieved user_id="2" achievement_id="1"/>
+
+  <!-- Events table -->
+  <events id="0" name="opening" description="the opening" start="2019-03-01 10:00:00" end="2019-03-01 11:00:00"/>
+  <events id="1" name="closing" description="the closing" start="2019-03-01 11:00:00" end="2019-03-01 12:00:00"/>
+
+  <!-- Interested table -->
+  <interested user_id="0" event_id="0"/> 
+  <interested user_id="0" event_id="1"/> 
+  <interested user_id="1" event_id="0"/> 
+  <interested user_id="2" event_id="1"/>
+
+  <!-- Groups table -->
+  <content id="0" name="ar1" enabled="1"/>
+  <content id="1" name="ar2" enabled="0"/>
+  <content id="2" name="ar3" enabled="1"/>
+
+  <!-- Maps table -->
+  <maps id="0" name="ground" image="example1.jpg"/>
+  <maps id="1" name="first" image="example2.jpg"/>
+  <maps id="2" name="second" image="example3.jpg"/>
+
+  <!-- Markers table -->
+  <markers id="0" map_id="0" name="hall" description="the hall" x="10" y="20"/>
+  <markers id="1" map_id="0" name="room" description="a room" x="20" y="30"/>
+  <markers id="2" map_id="1" name="hall" description="another hall" x="50" y="50"/>
+</dataset>
