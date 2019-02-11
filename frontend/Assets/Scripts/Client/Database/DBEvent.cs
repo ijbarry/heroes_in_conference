@@ -7,22 +7,23 @@ using System.Collections.Generic;
 /// </summary>
 [Serializable]
 public class DBEvent : IComparable<DBEvent> {
-    private long eventID;
-    public long EventID { get => eventID; }
-
-    private DateTime startTime;
-    public DateTime StartTime { get => startTime; set => startTime = value; }
-    private DateTime endTime;
-    public DateTime EndTime { get => endTime; set => endTime = value; }
-
-    private string eventName;
-    public string EventName { get => eventName; }
-
-    private string eventDescription;
-    public string EventDescription { get => eventDescription; }
+    public readonly long EventID;
+    public readonly DateTime StartTime;
+    public readonly DateTime EndTime;
+    public readonly string EventName;
+    public readonly string EventDescription;
 
     private bool userGoing;
     public bool UserGoing { get => userGoing; set => userGoing = value; }
+
+    public DBEvent(long eventID, DateTime startTime, DateTime endTime, string eventName, string eventDescription, bool userGoing = false) {
+        EventID = eventID;
+        StartTime = startTime;
+        EndTime = endTime;
+        EventName = eventName;
+        EventDescription = eventDescription;
+        this.userGoing = userGoing;
+    }
 
     public int CompareTo(DBEvent other) {
         return StartTime.CompareTo(other.StartTime);

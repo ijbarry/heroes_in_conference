@@ -59,6 +59,10 @@ public class Database {
     public void SetGoingEvent(long eventID, bool isGoing = true) {
         events[eventID].UserGoing = isGoing;
     }
+    
+    public List<DBEvent> GetCalendar() {
+        return new List<DBEvent>(events.Values);
+    }
     #endregion
 
     #region Maps
