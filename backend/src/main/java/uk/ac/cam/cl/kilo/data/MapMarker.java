@@ -26,7 +26,7 @@ public class MapMarker {
   public static final String TABLE = "markers",
       ID_FIELD = "id",
       NAME_FIELD = "name",
-      DESC_FIELD = "desc",
+      DESC_FIELD = "description",
       X_FIELD = "x",
       Y_FIELD = "y",
       MAP_FIELD = "map_id";

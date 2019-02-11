@@ -23,7 +23,7 @@ import java.sql.SQLException;
  * @author Nathan Corbyn
  */
 public class ContentGroup {
-  public static final String TABLE = "groups",
+  public static final String TABLE = "content",
       ID_FIELD = "id",
       NAME_FIELD = "name",
       ENABLED_FIELD = "enabled";

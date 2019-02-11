@@ -16,9 +16,6 @@ import static com.google.common.truth.Truth.*;
 import static org.mockito.Mockito.*;
 
 import java.lang.reflect.Field;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import javax.sql.DataSource;
 import org.junit.After;
 import org.junit.Before;
@@ -35,15 +32,11 @@ import org.mockito.runners.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class DatabaseTest {
   @Mock private DataSource ds;
-  @Mock private Connection conc;
-  @Mock private PreparedStatement stmt;
-  @Mock private ResultSet rs;
 
   @Before
-  public void setUp() throws Exception {
-    when(ds.getConnection()).thenReturn(conc);
-    when(conc.prepareStatement(any(String.class))).thenReturn(stmt);
-    when(stmt.executeQuery()).thenReturn(rs);
+  public void setup() throws Exception {
+    DataTestFramework.setup();
+    when(ds.getConnection()).thenReturn(DataTestFramework.getConnection());
   }
 
   @Test(expected = RuntimeException.class)
