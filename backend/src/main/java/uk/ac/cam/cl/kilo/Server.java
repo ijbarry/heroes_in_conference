@@ -1,71 +1,62 @@
 package uk.ac.cam.cl.kilo;
 
+import com.github.kevinsawicki.http.HttpRequest;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
+import org.json.simple.parser.JSONParser;
+
 import java.io.*;
 import static spark.Spark.*;
 import java.security.SecureRandom;
 import java.util.Random;
+import uk.ac.cam.cl.kilo.data.Database;
+import uk.ac.cam.cl.kilo.data.User;
 
 public class Server{
   private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
 
   public static void main(String args[]){
-     get("/facebook/register/stage1", (request, response) -> {
-      String state = RandomStringUtils.random(32, true, true);// random state
-      response.header("state",state);
-      return;
-    });
-    get("/facebook/register/stage2", (request, response) -> {
-            String state = request.queryParamOrDefault("state","");
-            if(state == ""){
-                response.status(401);// set status code to 401, hasn't done stage 1
-                return;
-            }
+      String AppToken = "2332527273433130|12NQ8TuitMgVHpZ4pUpoZMjqqJ0";
 
-            if (/*lookup state in database*/ false) {
-                //state in db
-                //user registered
-                //no need to re-register
-                //redirect to success page
-            }
-            else{
-              response.redirect("https://www.facebook.com/v3.2/dialog/oauth?&" +
-                        "client_id={2332527273433130}&" +
-                        "redirect_uri={"+request.host()+"/facebook/register/stage3/}&"  +
-                        "state={"+state+"}");
-            }
-            return;
+    get("/facebook/register", (request, response) -> {
+
+      String state = request.queryParamOrDefault("state","");
+      String code = request.queryParamOrDefault("code","");
+      String error = request.queryParamOrDefault("error","");
+
+
+       if(state == ""){ //stage1
+          state = generateState(32);
+         response.header("state",state);
+       }
+       else if(code ==""){//stage2
+         response.redirect("https://www.facebook.com/v3.2/dialog/oauth?&" +
+                 "client_id={2332527273433130}&" +
+                 "redirect_uri={"+request.host()+"/facebook/register}&"  +
+                 "state={"+state+"}");
+       }
+       else if(error != ""){//stage3
+         HttpRequest getAccessToken = HttpRequest.get("https://graph.facebook.com/v3.2/oauth/access_token", true,
+                 "client_id", "2332527273433130",
+                 "redirect_uri", request.host()+"/facebook/register",
+                 "client_secret", "13bb38aa6b63ffa248f0b3b15a6ba394",
+                 "code",code);
+           JSONParser parser = new JSONParser();
+           JSONObject Access= (JSONObject) parser.parse(getAccessToken.body());
+           String AccessToken = Access.get("access_token").toString();
+
+           HttpRequest inspectAccessToken = HttpRequest.get("https://graph.facebook.com/debug_token",true,
+                   "input_token",AccessToken,
+                           "access_token",AppToken);
+           JSONObject AccessInfo= (JSONObject) parser.parse(inspectAccessToken.body());
+           JSONArray Permissions = (JSONArray) AccessInfo.get("scopes");
+          // User user = A
+            //TODO: check permissions and add User to DB
+       }
+       return response;
     });
-    get("/facebook/register/stage3", (request, response) -> {
-            String state = request.queryParamOrDefault("state","");
-            String code = request.queryParamOrDefault("code","");
-            String error = request.queryParamOrDefault("error","");
-            try{
-            InetAddress addr = InetAddress.getLocalHost();
-            }
-            catch(UnknownHostException e){
-              response.status(400);
-            }
-            if(state == "" || code == "" && error == ""){
-                //error on FBs end
-                response.status(401);// set status code to 401, failed at stage 2
-                return; 
-            }
-            else if(error != ""){
-              //save to DB that user denied permissions
-            }
-            else{
-              //need a way to send GET request to FB
-              //get back access token
-              HttpRequest request = HttpRequest.get("https://graph.facebook.com/v3.2/oauth/access_token", true,
-                                  'client_id', 2332527273433130,
-                                   "redirect_uri", addr.getLocalHost(),
-                                   "client_secret", "13bb38aa6b63ffa248f0b3b15a6ba394",
-                                   "code",code);
-              //save request body to DB
-            }
-            //will be storing user data in DB so no need to consider expired token- only user once to get data
-        }
-    });
+
   }
 
   /**
@@ -74,7 +65,7 @@ public class Server{
    * @param length the number of bytes of hex to generate
    * @return the hex string
    */
-  public static String generateID(int length) {
+  public static String generateState(int length) {
     final Random r = new SecureRandom();
     byte[] state = new byte[length];
     r.nextBytes(state);
