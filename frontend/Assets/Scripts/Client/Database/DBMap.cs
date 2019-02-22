@@ -7,15 +7,27 @@ using System.Collections.Generic;
 /// </summary>
 [Serializable]
 public class DBMap {
-    private long mapID;
-    public long MapID { get => mapID; }
+    public readonly long MapID;
+    public readonly string MapName;
+    public readonly DateTime ValidBefore;
+    
+    private FilePath fp;
+    public FilePath FP { get => fp; set => fp = value; }
 
-    private DateTime validBefore;
-    public DateTime ValidBefore { get => validBefore; set => validBefore = value; }
+    public DBMap(long mapID, string mapName, DateTime validBefore) {
+        MapID = mapID;
+        MapName = mapName;
+        ValidBefore = validBefore;
+    }
 
-    private string filePath;
-    public string FilePath { get => filePath; }
+    // TODO: move this class outside of DBMap, since it isnt unique to that
+    public class FilePath {
+        public readonly bool IsRemote;
+        public readonly string Path;
 
-    private string mapName;
-    public string MapName { get => mapName; }
+        public FilePath(bool isRemote, string path) {
+            IsRemote = isRemote;
+            Path = path;
+        }
+    }
 }

@@ -23,8 +23,12 @@ public class NetworkDatabase : MonoBehaviour {
             localDb = new Database();
         }
 
-        client = new Client();
+        client = new Client(@"DebugFiles");
+        //Debug.Log("Downloading to " + Application.persistentDataPath);
+        //client = new Client(Application.persistentDataPath + "\test.jpg");
         // TODO: Authenticate with client
+
+        localDb.SetAllMaps(client.GetMaps());
     }
 
     public void SetAchievement(long achievementID, bool wonAchievement = true) {
@@ -37,7 +41,11 @@ public class NetworkDatabase : MonoBehaviour {
         return localDb.GetCalendar();
     }
 
-    void Update() {
-        
+    public List<DBMap> GetMaps() {
+        return localDb.GetMaps();
+    }
+
+    public bool TryDownloadMap(DBMap map) {
+        return client.TryDownloadMap(map);
     }
 }

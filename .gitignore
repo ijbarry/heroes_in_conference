@@ -151,11 +151,12 @@ cache/
 # NUnit
 *.VisualState.xml
 TestResult.xml
-NUnit.3.11.0/
 
 # Unity Assets
 Assets/TextMesh Pro
 
+# Ignore unity scenes as they are synced by the Unity Collaborate instead
+**/Scenes/
 
-# Json Parser
-Newtonsoft.Json.12.0.1/
+# Vuforia Config files
+VuforiaConfiguration*
