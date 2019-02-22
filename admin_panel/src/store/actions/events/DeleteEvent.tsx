@@ -1,8 +1,8 @@
-import {API} from "../../api/API";
+import {API} from "../../../api/API";
 import {updateCachedEvent} from "./UpdateCachedEvent";
-import {Container} from "../Container";
-import {Event} from "../../events/Event";
-import {AppDispatch} from "../appStore";
+import {Container} from "../../Container";
+import {Event} from "../../../events/Event";
+import {AppDispatch} from "../../appStore";
 
 
 /**

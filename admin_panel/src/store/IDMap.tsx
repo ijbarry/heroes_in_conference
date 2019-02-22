@@ -27,8 +27,19 @@ function idMapValues<T>(map: IDMap<T>): T[] {
     return result;
 }
 
+function fromArray<T>(array: T[], keyExtractor: (item: T) => string): IDMap<T> {
+    const result: IDMap<T> = {};
+
+    for (const item of array) {
+        result[keyExtractor(item)] = item;
+    }
+
+    return result;
+}
+
 // now we can use these functions as if they were static properties of IDMap
 export const IDMap = {
     iterate: idMapIterate,
     values: idMapValues,
+    fromArray,
 };

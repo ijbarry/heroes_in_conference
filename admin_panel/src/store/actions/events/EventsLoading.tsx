@@ -1,4 +1,4 @@
-import {AppActionTypes} from "../AppActions";
+import {AppActionTypes} from "../../AppActions";
 import {Action} from "redux";
 
 

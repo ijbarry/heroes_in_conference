@@ -1,7 +1,7 @@
-import {Event} from "../../events/Event";
-import {AppActionTypes} from "../AppActions";
+import {Event} from "../../../events/Event";
+import {AppActionTypes} from "../../AppActions";
 import {Action} from "redux";
-import {Container} from "../Container";
+import {Container} from "../../Container";
 
 export interface UpdateCachedEventAction extends Action<AppActionTypes> {
     type: AppActionTypes.UPDATE_EVENT,

@@ -3,9 +3,10 @@ import {Route} from "react-router";
 import './App.css';
 
 import {EventListPage} from "./events/EventListPage";
-import {MapPage} from "./map/MapPage";
+import {MapListPage} from "./maps/MapListPage";
 import {NavLink} from "react-router-dom";
 import {EventPage} from "./events/EventPage";
+import {MapPage} from "./maps/MapPage";
 
 class App extends React.Component {
     public render() {
@@ -24,7 +25,7 @@ class App extends React.Component {
                             <NavLink to="/" exact={true} className="nav-link" activeClassName="active">Home</NavLink>
                         </li>
                         <li className="nav-item">
-                            <NavLink to="/map" className="nav-link" activeClassName="active">Map</NavLink>
+                            <NavLink to="/maps" className="nav-link" activeClassName="active">Maps</NavLink>
                         </li>
                         <li className="nav-item">
                             <NavLink to="/events" className="nav-link" activeClassName="active">Events</NavLink>
@@ -33,7 +34,8 @@ class App extends React.Component {
                 </div>
             </nav>
             <div className="container">
-                <Route path="/map" component={MapPage}/>
+                <Route path="/maps" component={MapListPage}/>
+                <Route path="/map/:id" component={MapPage} />
                 <Route path="/events" component={EventListPage}/>
                 <Route path="/event/:id" component={EventPage}/>
             </div>

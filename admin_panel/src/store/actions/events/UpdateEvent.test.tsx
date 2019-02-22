@@ -1,6 +1,6 @@
 import {updateCachedEvent} from "./UpdateCachedEvent";
-import {Container} from "../Container";
-import {Event} from "../../events/Event";
+import {Container} from "../../Container";
+import {Event} from "../../../events/Event";
 
 describe("updateCachedEvent", () => {
 

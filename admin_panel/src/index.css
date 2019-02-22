@@ -3,3 +3,26 @@ body {
   padding: 0;
   font-family: sans-serif;
 }
+
+.leaflet-container {
+  width: 100%;
+  padding-top: 56.25%; /* 16:9 aspect ratio */
+  position: relative;
+}
+
+.marker-table-input {
+  width: 100%;
+  border: none;
+}
+
+.table-shrink {
+  white-space: nowrap;
+}
+
+.table-half-expand {
+  width: 30%;
+}
+
+.table-expand {
+  width: 99%;
+}

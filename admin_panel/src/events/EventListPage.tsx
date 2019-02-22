@@ -5,7 +5,7 @@ import {connect} from "react-redux";
 import {AppState} from "../store/AppState";
 import {IDMap} from "../store/IDMap";
 import {AppDispatch} from "../store/appStore";
-import {loadEvents} from "../store/actions/LoadEvents";
+import {loadEvents} from "../store/actions/events/LoadEvents";
 import {Container} from "../store/Container";
 import {Link, RouteComponentProps} from "react-router-dom";
 

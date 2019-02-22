@@ -1,8 +1,8 @@
-import {Container, ModifiedContainer} from "../Container";
+import {Container, ModifiedContainer} from "../../Container";
 import {updateCachedEvent} from "./UpdateCachedEvent";
-import {Event} from "../../events/Event";
-import {API} from "../../api/API";
-import {AppDispatch} from "../appStore";
+import {Event} from "../../../events/Event";
+import {API} from "../../../api/API";
+import {AppDispatch} from "../../appStore";
 
 /**
  * Attempts to post event to server, and, if successful, updates the event in the cache.

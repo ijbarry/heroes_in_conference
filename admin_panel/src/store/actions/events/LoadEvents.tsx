@@ -1,6 +1,6 @@
-import {AppThunkAction} from "../AppActions";
+import {AppThunkAction} from "../../AppActions";
 import {eventsLoading} from "./EventsLoading";
-import {API} from "../../api/API";
+import {API} from "../../../api/API";
 import {eventsLoaded} from "./EventsLoaded";
 import {eventsLoadError} from "./EventsLoadError";
 

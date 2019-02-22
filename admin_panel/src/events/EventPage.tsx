@@ -6,10 +6,10 @@ import {AppDispatch} from "../store/appStore";
 import {connect} from "react-redux";
 import {Event} from "./Event";
 import {Container} from "../store/Container";
-import {loadEvents} from "../store/actions/LoadEvents";
+import {loadEvents} from "../store/actions/events/LoadEvents";
 import {DateTimeLocal} from "../util/DateTimeLocal";
-import {updateEvent} from "../store/actions/UpdateEvent";
-import {deleteEvent} from "../store/actions/DeleteEvent";
+import {updateEvent} from "../store/actions/events/UpdateEvent";
+import {deleteEvent} from "../store/actions/events/DeleteEvent";
 
 interface RouteParams {
     id: string,

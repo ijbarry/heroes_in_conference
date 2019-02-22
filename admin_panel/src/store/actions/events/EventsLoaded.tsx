@@ -1,5 +1,5 @@
-import {AppActionTypes} from "../AppActions";
-import {Event} from "../../events/Event";
+import {AppActionTypes} from "../../AppActions";
+import {Event} from "../../../events/Event";
 import {Action} from "redux";
 
 

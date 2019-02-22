@@ -1,6 +1,6 @@
-import {AppActionTypes} from "../AppActions";
+import {AppActionTypes} from "../../AppActions";
 import {Action} from "redux";
-import {ErrorState} from "../Container";
+import {ErrorState} from "../../Container";
 
 
 export interface EventsLoadErrorAction extends Action<AppActionTypes> {
