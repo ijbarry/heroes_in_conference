@@ -44,10 +44,13 @@ public class MapMarkerTest {
   public void setup() throws Exception {
     Database.configure(source);
     when(source.getConnection()).thenReturn(conc);
+    when(conc.prepareStatement(any(String.class), eq(PreparedStatement.RETURN_GENERATED_KEYS)))
+        .thenReturn(stmt);
     when(conc.prepareStatement(any(String.class))).thenReturn(stmt);
     when(stmt.getGeneratedKeys()).thenReturn(rs);
     when(stmt.executeQuery()).thenReturn(rs);
     when(rs.first()).thenReturn(true);
+    when(rs.getLong(1)).thenReturn(1L);
     when(rs.getLong(any(String.class))).thenReturn(1L);
     when(rs.getString(MapMarker.NAME_FIELD)).thenReturn("test");
     when(rs.getString(MapMarker.DESC_FIELD)).thenReturn("example");

@@ -71,7 +71,8 @@ public class MapMarker {
                   + X_FIELD
                   + ", "
                   + Y_FIELD
-                  + ") VALUES (?, ?, ?, ? , ?)");
+                  + ") VALUES (?, ?, ?, ? , ?)",
+              PreparedStatement.RETURN_GENERATED_KEYS);
       stmt.setLong(1, this.map);
       stmt.setString(2, name);
       stmt.setString(3, desc);
@@ -80,7 +81,7 @@ public class MapMarker {
       stmt.executeUpdate();
       ResultSet rs = stmt.getGeneratedKeys();
       if (!rs.first()) throw new DatabaseException("Failed to generate ID for marker");
-      id = rs.getLong(ID_FIELD);
+      id = rs.getLong(1);
     } catch (SQLException e) {
       throw new DatabaseException(e);
     }
@@ -152,6 +153,50 @@ public class MapMarker {
       stmt.executeUpdate();
       // Only update if transaction is successful
       this.desc = desc;
+    } catch (SQLException e) {
+      throw new DatabaseException(e);
+    }
+  }
+
+  /**
+   * @param name the new name for the marker
+   * @param desc the new description for the marker
+   * @param x the new x-coordinate for the marker
+   * @param y the new y-coordinate for the marker
+   * @throws DatabaseException if the marker could not be updated
+   */
+  public void set(String name, String desc, int x, int y) throws DatabaseException {
+    if (name == null || name.equals(""))
+      throw new IllegalArgumentException("Name must not be null or empty");
+    if (desc == null) desc = "";
+    if (this.name.equals(name) && this.desc.equals(desc) && this.x == x && this.y == y) return;
+    try (Connection conc = Database.getInstance().getConnection()) {
+      PreparedStatement stmt =
+          conc.prepareStatement(
+              "UPDATE "
+                  + TABLE
+                  + " SET "
+                  + NAME_FIELD
+                  + " = ?, "
+                  + DESC_FIELD
+                  + " = ?, "
+                  + X_FIELD
+                  + " = ?, "
+                  + Y_FIELD
+                  + " = ? WHERE "
+                  + ID_FIELD
+                  + " = ?");
+      stmt.setString(1, name);
+      stmt.setString(2, desc);
+      stmt.setInt(3, x);
+      stmt.setInt(4, y);
+      stmt.setLong(5, id);
+      stmt.executeUpdate();
+      // Only update if transaction is successful
+      this.name = name;
+      this.desc = desc;
+      this.x = x;
+      this.y = y;
     } catch (SQLException e) {
       throw new DatabaseException(e);
     }

@@ -26,7 +26,6 @@ import java.util.List;
  */
 public class User {
   public static final String TABLE = "users", ID_FIELD = "id", NAME_FIELD = "name";
-  public static final int MIN_NAME_LENGTH = 4;
 
   private long id;
   private String name;
@@ -34,34 +33,29 @@ public class User {
   /**
    * Create a new user with the given name.
    *
+   * @param id the ID for the new user
    * @param name the name of the new user
-   * @throws IllegalArgumentException if name is null or name is less than four characters
+   * @throws IllegalArgumentException if name is null or empty
    * @throws DatabaseException if the user could not be added to the database
    */
-  public User(String name) throws DatabaseException {
-    if (name == null || name.length() < MIN_NAME_LENGTH)
-      throw new IllegalArgumentException(
-          "Name must not be null or less than " + MIN_NAME_LENGTH + " characters");
+  public User(long id, String name) throws DatabaseException {
+    if (name == null || name.equals(""))
+      throw new IllegalArgumentException("Name must not be null or empty");
     this.name = name;
+    this.id = id;
     try (Connection conc = Database.getInstance().getConnection()) {
       PreparedStatement stmt =
-          conc.prepareStatement("INSERT INTO " + TABLE + "(" + NAME_FIELD + ") VALUES (?)");
-      stmt.setString(1, name);
+          conc.prepareStatement(
+              "INSERT INTO " + TABLE + "(" + ID_FIELD + ", " + NAME_FIELD + ") VALUES (?, ?)");
+      stmt.setLong(1, id);
+      stmt.setString(2, name);
       stmt.executeUpdate();
-      ResultSet rs = stmt.getGeneratedKeys();
-      if (!rs.first()) throw new DatabaseException("Failed to generate ID for user");
-      id = rs.getLong(ID_FIELD);
     } catch (SQLException e) {
       throw new DatabaseException(e);
     }
   }
 
-  private User(long id, String name) {
-    assert (name != null);
-    assert (name.length() >= MIN_NAME_LENGTH);
-    this.id = id;
-    this.name = name;
-  }
+  private User() {}
 
   /** @return the ID of the user */
   public long getID() {
@@ -286,30 +280,6 @@ public class User {
   }
 
   /**
-   * @param name the new name for the user
-   * @throws DatabaseException if the name could not be updated
-   * @throws IllegalArgumentException if the name is null or less than four characters
-   */
-  public void setName(String name) throws DatabaseException {
-    if (name == null || name.length() < MIN_NAME_LENGTH)
-      throw new IllegalArgumentException(
-          "Name must not be null or less than " + MIN_NAME_LENGTH + " characters");
-    if (name.equals(this.name)) return;
-    try (Connection conc = Database.getInstance().getConnection()) {
-      PreparedStatement stmt =
-          conc.prepareStatement(
-              "UPDATE " + TABLE + " SET " + NAME_FIELD + " = ? WHERE " + ID_FIELD + " = ?");
-      stmt.setString(1, name);
-      stmt.setLong(2, id);
-      stmt.executeUpdate();
-      // Only update if transaction is successful
-      this.name = name;
-    } catch (SQLException e) {
-      throw new DatabaseException(e);
-    }
-  }
-
-  /**
    * Delete the user. This will also delete all of the user's achievements.
    *
    * @throws DatabaseException if the user could not be deleted
@@ -320,10 +290,6 @@ public class User {
         // Need to execute several transactions atomically, so disable auto-commit
         conc.setAutoCommit(false);
         PreparedStatement stmt =
-            conc.prepareStatement("DELETE FROM " + TABLE + " WHERE " + ID_FIELD + " = ?");
-        stmt.setLong(1, id);
-        stmt.executeUpdate();
-        stmt =
             conc.prepareStatement(
                 "DELETE FROM "
                     + Achievement.ACHIEVED_TABLE
@@ -339,6 +305,15 @@ public class User {
                     + " WHERE "
                     + Event.INTERESTED_USER_ID_FIELD
                     + " = ?");
+        stmt.setLong(1, id);
+        stmt.executeUpdate();
+        stmt =
+            conc.prepareStatement(
+                "DELETE FROM " + Session.TABLE + " WHERE " + Session.USER_FIELD + " = ?");
+        stmt.setLong(1, id);
+        stmt.executeUpdate();
+
+        stmt = conc.prepareStatement("DELETE FROM " + TABLE + " WHERE " + ID_FIELD + " = ?");
         stmt.setLong(1, id);
         stmt.executeUpdate();
         // Commit if both transactions were successful
@@ -373,41 +348,17 @@ public class User {
   }
 
   /**
-   * Get an existing user by name.
+   * Check if a record of a user with the given ID exists.
    *
-   * @param name the name of the user
-   * @return the constructed user
-   * @throws DatabaseException if the user could not be found
-   */
-  public static User getByName(String name) throws DatabaseException {
-    if (name == null | name.length() < MIN_NAME_LENGTH)
-      throw new DatabaseException(
-          "Name must not be null or less than " + MIN_NAME_LENGTH + " characters");
-    try (Connection conc = Database.getInstance().getConnection()) {
-      PreparedStatement stmt =
-          conc.prepareStatement("SELECT * FROM " + TABLE + " WHERE " + NAME_FIELD + " = ?");
-      stmt.setString(1, name);
-      ResultSet rs = stmt.executeQuery();
-      if (!rs.first()) throw new DatabaseException("No user with name '" + name + "'");
-      return from(rs);
-    } catch (SQLException e) {
-      throw new DatabaseException(e);
-    }
-  }
-
-  /**
-   * Check if a user with the given name exists.
-   *
-   * @param name the name to check for
+   * @param id the ID of the user
    * @return true if the user exists, false otherwise
    * @throws DatabaseException if the database could not be accessed
    */
-  public static boolean existsWithName(String name) throws DatabaseException {
-    if (name == null | name.length() < MIN_NAME_LENGTH) return false;
+  public static boolean existsWithID(long id) throws DatabaseException {
     try (Connection conc = Database.getInstance().getConnection()) {
       PreparedStatement stmt =
-          conc.prepareStatement("SELECT * FROM " + TABLE + " WHERE " + NAME_FIELD + " = ?");
-      stmt.setString(1, name);
+          conc.prepareStatement("SELECT * FROM " + TABLE + " WHERE " + ID_FIELD + " = ?");
+      stmt.setLong(1, id);
       ResultSet rs = stmt.executeQuery();
       return rs.first();
     } catch (SQLException e) {
@@ -425,9 +376,10 @@ public class User {
   static User from(ResultSet rs) throws DatabaseException {
     assert (rs != null);
     try {
-      long id = rs.getLong(ID_FIELD);
-      String name = rs.getString(NAME_FIELD);
-      return new User(id, name);
+      User user = new User();
+      user.id = rs.getLong(ID_FIELD);
+      user.name = rs.getString(NAME_FIELD);
+      return user;
     } catch (SQLException e) {
       throw new DatabaseException(e);
     }

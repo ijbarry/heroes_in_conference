@@ -60,7 +60,30 @@ public class Database {
   public List<Achievement> getAchievements() throws DatabaseException {
     try (Connection conc = getConnection()) {
       List<Achievement> result = new ArrayList<>();
-      PreparedStatement stmt = conc.prepareStatement("SELECT * FROM " + Achievement.TABLE);
+      PreparedStatement stmt =
+          conc.prepareStatement(
+              "SELECT *, COUNT("
+                  + Achievement.ACHIEVED_TABLE
+                  + "."
+                  + Achievement.ACHIEVED_ACHIEVEMENT_ID_FIELD
+                  + ") AS "
+                  + Achievement.COUNT_FIELD
+                  + " FROM "
+                  + Achievement.TABLE
+                  + ", "
+                  + Achievement.ACHIEVED_TABLE
+                  + " WHERE "
+                  + Achievement.ACHIEVED_TABLE
+                  + "."
+                  + Achievement.ACHIEVED_ACHIEVEMENT_ID_FIELD
+                  + " = "
+                  + Achievement.TABLE
+                  + "."
+                  + Achievement.ID_FIELD
+                  + " GROUP BY "
+                  + Achievement.TABLE
+                  + "."
+                  + Achievement.ID_FIELD);
       ResultSet rs = stmt.executeQuery();
       while (rs.next()) result.add(Achievement.from(rs));
       return result;
@@ -135,6 +158,43 @@ public class Database {
       ResultSet rs = stmt.executeQuery();
       while (rs.next()) result.add(ConferenceMap.from(rs));
       return result;
+    } catch (SQLException e) {
+      throw new DatabaseException(e);
+    }
+  }
+
+  /**
+   * @return the usage statistics for the last 24 hours
+   * @throws DatabaseException if the database could not be accessed
+   */
+  public List<UsageStatistic> getUsage() throws DatabaseException {
+    try (Connection conc = getConnection()) {
+      List<UsageStatistic> result = new ArrayList<>();
+      PreparedStatement stmt =
+          conc.prepareStatement(
+              "SELECT * FROM "
+                  + UsageStatistic.TABLE
+                  + " WHERE "
+                  + UsageStatistic.TIME_FIELD
+                  + " >= DATE_SUB(NOW(), INTERVAL 1 DAY)");
+      ResultSet rs = stmt.executeQuery();
+      while (rs.next()) result.add(UsageStatistic.from(rs));
+      return result;
+    } catch (SQLException e) {
+      throw new DatabaseException(e);
+    }
+  }
+
+  /**
+   * @return the number of users registered with the system
+   * @throws DatabaseException if the database could not be accessed
+   */
+  public int getUserCount() throws DatabaseException {
+    try (Connection conc = getConnection()) {
+      PreparedStatement stmt = conc.prepareStatement("SELECT COUNT(*) FROM " + User.TABLE);
+      ResultSet rs = stmt.executeQuery();
+      if (!rs.first()) throw new DatabaseException("COUNT(*) returned no records");
+      return rs.getInt(1);
     } catch (SQLException e) {
       throw new DatabaseException(e);
     }
