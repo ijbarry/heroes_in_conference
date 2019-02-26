@@ -34,19 +34,20 @@ public class FaceDetection {
     public static void main(String[] args){
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 
-        Mat photo = Imgcodecs.imread(args[0]);
+        String path = args[0];
+        Mat photo = Imgcodecs.imread(path);
 
         Rect[] FrontfacesArray = detectFrontalFace(photo);
         if(FrontfacesArray.length >0) {
-            addText(photo);
+            addHat(photo,FrontfacesArray,path);
         }
         else{
-            addText(photo);
+            addText(photo,path);
         }
 
     }
 
-    static void addText(Mat photo){
+    static void addText(Mat photo,String PhotoPath){
         String path = texts[new Random().nextInt(1)];
         Mat text = Imgcodecs.imread(path);
 
@@ -63,11 +64,11 @@ public class FaceDetection {
         Mat destinationROI = photo.submat(roi);
         resizedText.copyTo(destinationROI,resizedText);
 
-        imwrite( "out/production/FaceDetection/Updated.jpeg", photo );
+        imwrite( PhotoPath, photo );
 
     }
 
-    static void addHat(Mat photo,Rect[] faces){
+    static void addHat(Mat photo,Rect[] faces, String PhotoPath){
 
         List<Rect> MaskFaces = new ArrayList<Rect>();
 
@@ -102,15 +103,15 @@ public class FaceDetection {
             }
             if(!MaskFaces.isEmpty()){
                 Rect[] maskFaces = (Rect[]) MaskFaces.toArray();
-                addMask(photo,maskFaces);
+                addMask(photo,maskFaces,path);
             }
         }
 
-        imwrite( "out/production/FaceDetection/Updated.jpeg", photo );
+        imwrite( PhotoPath, photo );
 
     }
 
-    static void addMask(Mat photo,Rect[] faces){
+    static void addMask(Mat photo,Rect[] faces,String PhotoPath){
 
         for (int i = 0; i < faces.length; i++) {
             String path = masks[new Random().nextInt(3)];
@@ -131,7 +132,7 @@ public class FaceDetection {
             resizedMask.copyTo(destinationROI,resizedMask);
         }
 
-        imwrite( "out/production/FaceDetection/Updated.jpeg", photo );
+        imwrite( PhotoPath, photo );
 
     }
 
@@ -142,7 +143,7 @@ public class FaceDetection {
             throw new NullPointerException("photo is empty");
         }
 
-         Mat greyPhoto = new Mat();
+        Mat greyPhoto = new Mat();
         Imgproc.cvtColor( photo, greyPhoto, Imgproc.COLOR_BGR2GRAY );
 
         Imgproc.equalizeHist(greyPhoto, greyPhoto);
