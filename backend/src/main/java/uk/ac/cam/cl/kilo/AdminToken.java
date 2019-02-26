@@ -24,7 +24,7 @@ public class AdminToken {
         try {
             digest = MessageDigest.getInstance("SHA-256");
             encodedhash = digest.digest(toHash.getBytes(StandardCharsets.UTF_8));
-            String hashed = encodedhash.toString();
+            String hashed = bytesToHex(encodedhash);
 
             String fileName = "uk/ac/cam/cl/kilo/Hash.txt";
             File file = new File(fileName);
@@ -33,12 +33,18 @@ public class AdminToken {
 
             String storedHash = br.readLine();
             ZonedDateTime lastAttempt = ZonedDateTime.parse(br.readLine());
-
+            br.close();
             Boolean valid = lastAttempt.minusMinutes(30l).isAfter(lastAccessed);
 
             if(storedHash != hashed ||!valid){
                 FailedLoginAttempts++;
-                throw new LoginFailure(FailedLoginAttempts,valid);
+                if(FailedLoginAttempts == 3){
+                    FailedLoginAttempts = 0;
+                    throw new LoginFailure(3,valid);
+                }
+                else {
+                    throw new LoginFailure(FailedLoginAttempts, valid);
+                }
             }
         }
         catch(LoginFailure e){
@@ -50,9 +56,83 @@ public class AdminToken {
 
 
     }
-    public static AdminToken getInstance(String email, String password) {
+    public static AdminToken getInstance(String username, String password) throws LoginFailure {
         if (Token == null ) {
-            Token = new AdminToken( email,  password);
+            Token = new AdminToken( username,  password);
+        }
+        return Token;
+    }
+
+    public AdminToken changeUsername(String oldUsername, String newUsername, String password){
+        Token = this;
+        lastAccessed = ZonedDateTime.now();
+
+        String toCheck = oldUsername + password;
+        String toWrite = newUsername + password;
+        MessageDigest digest;
+        byte[] encodedhash;
+        try {
+            digest = MessageDigest.getInstance("SHA-256");
+            encodedhash = digest.digest(toWrite.getBytes(StandardCharsets.UTF_8));
+            String hashed = bytesToHex(encodedhash);
+
+            String fileName = "uk/ac/cam/cl/kilo/Hash.txt";
+            RandomAccessFile file = new RandomAccessFile(fileName, "rw");
+
+            String storedHash = file.readLine();
+            ZonedDateTime lastAttempt = ZonedDateTime.parse(file.readLine());
+            Boolean valid = lastAttempt.minusMinutes(30l).isAfter(lastAccessed);
+
+            if(storedHash != hashed ||!valid){
+                throw new LoginFailure(0,true);
+            }
+            else{
+                file.seek(0l);
+                file.writeUTF(toWrite);
+            }
+        }
+        catch(LoginFailure e){
+            throw e;
+        }
+        catch(NoSuchAlgorithmException | IOException e){
+            System.out.println("File hash not found");
+        }
+        return Token;
+    }
+
+    public AdminToken changePassword(String Username, String oldPassword, String newPassword){
+        Token = this;
+        lastAccessed = ZonedDateTime.now();
+
+        String toCheck = Username + oldPassword;
+        String toWrite = Username + newPassword;
+        MessageDigest digest;
+        byte[] encodedhash;
+        try {
+            digest = MessageDigest.getInstance("SHA-256");
+            encodedhash = digest.digest(toWrite.getBytes(StandardCharsets.UTF_8));
+            String hashed = bytesToHex(encodedhash);
+
+            String fileName = "uk/ac/cam/cl/kilo/Hash.txt";
+            RandomAccessFile file = new RandomAccessFile(fileName, "rw");
+
+            String storedHash = file.readLine();
+            ZonedDateTime lastAttempt = ZonedDateTime.parse(file.readLine());
+            Boolean valid = lastAttempt.minusMinutes(30l).isAfter(lastAccessed);
+
+            if(storedHash != hashed ||!valid){
+                throw new LoginFailure(0,true);
+            }
+            else{
+                file.seek(0l);
+                file.writeUTF(toWrite);
+            }
+        }
+        catch(LoginFailure e){
+            throw e;
+        }
+        catch(NoSuchAlgorithmException | IOException e){
+            System.out.println("File hash not found");
         }
         return Token;
     }
@@ -62,6 +142,7 @@ public class AdminToken {
     }
 
     public boolean isGood(){
+        this.refresh();
         return(ZonedDateTime.now().minusMinutes(60l).isAfter(lastAccessed));
     }
 
