@@ -184,7 +184,7 @@ public class DataTestFramework {
                 + " varchar(255) NOT NULL,"
                 + ConferenceMap.IMAGE_FIELD
                 + " varchar(4351) NOT NULL, PRIMARY KEY ("
-                + Event.ID_FIELD
+                + ConferenceMap.ID_FIELD
                 + "))");
     stmt.execute();
     // Create the markers table
@@ -207,7 +207,7 @@ public class DataTestFramework {
                 + " int NOT NULL, "
                 + MapMarker.Y_FIELD
                 + " int NOT NULL, PRIMARY KEY ("
-                + Event.ID_FIELD
+                + MapMarker.ID_FIELD
                 + "), FOREIGN KEY ("
                 + MapMarker.MAP_FIELD
                 + ") REFERENCES "

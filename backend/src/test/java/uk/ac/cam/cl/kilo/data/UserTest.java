@@ -51,24 +51,24 @@ public class UserTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void user_throwsException_withNullName() throws Exception {
-    new User(null);
+    new User(1, null);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void user_throwsException_withEmptyName() throws Exception {
-    new User("");
+    new User(1, "");
   }
 
   @Test
   public void user_created_withValidName() throws Exception {
-    User user = new User("test");
+    User user = new User(1, "test");
 
     assertThat(user.getName()).isEqualTo("test");
   }
 
   @Test
   public void user_ignores_nullAchievement() throws Exception {
-    User user = new User("test");
+    User user = new User(1, "test");
 
     user.achieve(null);
     user.revoke(null);
@@ -78,7 +78,7 @@ public class UserTest {
 
   @Test
   public void user_ignores_nullEvent() throws Exception {
-    User user = new User("test");
+    User user = new User(1, "test");
 
     user.markInterestIn(null);
     user.unmarkInterestIn(null);

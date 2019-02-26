@@ -43,6 +43,8 @@ public class AchievementTest {
   public void setup() throws Exception {
     Database.configure(source);
     when(source.getConnection()).thenReturn(conc);
+    when(conc.prepareStatement(any(String.class), eq(PreparedStatement.RETURN_GENERATED_KEYS)))
+        .thenReturn(stmt);
     when(conc.prepareStatement(any(String.class))).thenReturn(stmt);
     when(stmt.getGeneratedKeys()).thenReturn(rs);
     when(stmt.executeQuery()).thenReturn(rs);
@@ -51,93 +53,6 @@ public class AchievementTest {
     when(rs.getLong(any(String.class))).thenReturn(1L);
     when(rs.getInt(any(String.class))).thenReturn(100);
     when(rs.getString(any(String.class))).thenReturn("test");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void achievement_throwsException_withNullName() throws Exception {
-    new Achievement(null, 100);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void achievement_throwsException_withEmptyName() throws Exception {
-    new Achievement("", 100);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void achievement_throwsException_withNegativeReward() throws Exception {
-    new Achievement(null, -1);
-  }
-
-  @Test
-  public void contentGroup_created_withValidNameAndReward() throws Exception {
-    Achievement achievement = new Achievement("test", 100);
-
-    assertThat(achievement.getName()).isEqualTo("test");
-    assertThat(achievement.getReward()).isEqualTo(100);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void achievement_throwsException_renamedWithNullName() throws Exception {
-    Achievement achievement = new Achievement("test", 100);
-
-    achievement.setName(null);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void achievement_throwsException_renamedWithEmptyName() throws Exception {
-    Achievement achievement = new Achievement("test", 100);
-
-    achievement.setName("");
-  }
-
-  @Test
-  public void achievement_renamed_renamedWithValidName() throws Exception {
-    Achievement achievement = new Achievement("test", 100);
-
-    achievement.setName("other");
-
-    verify(stmt, times(2)).executeUpdate();
-    assertThat(achievement.getName()).isEqualTo("other");
-  }
-
-  @Test
-  public void achievement_notRenamed_renamedWithCurrentName() throws Exception {
-    Achievement achievement = new Achievement("test", 100);
-
-    achievement.setName("test");
-
-    verify(stmt, times(1)).executeUpdate();
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void achievement_throwsException_updatedWithNegativeReward() throws Exception {
-    Achievement achievement = new Achievement("test", 100);
-
-    achievement.setReward(-1);
-  }
-
-  @Test
-  public void achievement_updated_updatedWithValidReward() throws Exception {
-    Achievement achievement = new Achievement("test", 100);
-
-    achievement.setReward(200);
-    achievement.setReward(300);
-    achievement.setReward(400);
-
-    verify(stmt, times(4)).executeUpdate();
-    assertThat(achievement.getReward()).isEqualTo(400);
-  }
-
-  @Test
-  public void achievement_notUpdate_updateWithCurrentReward() throws Exception {
-    Achievement achievement = new Achievement("test", 100);
-
-    achievement.setReward(100);
-    achievement.setReward(200);
-    achievement.setReward(200);
-
-    verify(stmt, times(2)).executeUpdate();
-    assertThat(achievement.getReward()).isEqualTo(200);
   }
 
   @Test

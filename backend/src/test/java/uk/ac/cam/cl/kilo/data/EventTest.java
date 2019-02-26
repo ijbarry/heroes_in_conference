@@ -45,6 +45,8 @@ public class EventTest {
   public void setup() throws Exception {
     Database.configure(source);
     when(source.getConnection()).thenReturn(conc);
+    when(conc.prepareStatement(any(String.class), eq(PreparedStatement.RETURN_GENERATED_KEYS)))
+        .thenReturn(stmt);
     when(conc.prepareStatement(any(String.class))).thenReturn(stmt);
     when(stmt.getGeneratedKeys()).thenReturn(rs);
     when(stmt.executeQuery()).thenReturn(rs);

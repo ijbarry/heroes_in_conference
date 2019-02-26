@@ -43,6 +43,8 @@ public class ContentGroupTest {
   public void setup() throws Exception {
     Database.configure(source);
     when(source.getConnection()).thenReturn(conc);
+    when(conc.prepareStatement(any(String.class), eq(PreparedStatement.RETURN_GENERATED_KEYS)))
+        .thenReturn(stmt);
     when(conc.prepareStatement(any(String.class))).thenReturn(stmt);
     when(stmt.getGeneratedKeys()).thenReturn(rs);
     when(stmt.executeQuery()).thenReturn(rs);
@@ -53,77 +55,15 @@ public class ContentGroupTest {
     when(rs.getString(any(String.class))).thenReturn("test");
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void contentGroup_throwsException_withNullName() throws Exception {
-    new ContentGroup(null);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void contentGroup_throwsException_withEmptyName() throws Exception {
-    new ContentGroup("");
-  }
-
-  @Test
-  public void contentGroup_created_withValidName() throws Exception {
-    ContentGroup group = new ContentGroup("test");
-
-    assertThat(group.getName()).isEqualTo("test");
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void contentGroup_throwsException_renamedWithNullName() throws Exception {
-    ContentGroup group = new ContentGroup("test");
-
-    group.setName(null);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void contentGroup_throwsException_renamedWithEmptyName() throws Exception {
-    ContentGroup group = new ContentGroup("test");
-
-    group.setName("");
-  }
-
-  @Test
-  public void contentGroup_renamed_renamedWithValidName() throws Exception {
-    ContentGroup group = new ContentGroup("test");
-
-    group.setName("other");
-
-    verify(stmt, times(2)).executeUpdate();
-    assertThat(group.getName()).isEqualTo("other");
-  }
-
-  @Test
-  public void contentGroup_notRenamed_renamedWithCurrentName() throws Exception {
-    ContentGroup group = new ContentGroup("test");
-
-    group.setName("test");
-
-    verify(stmt, times(1)).executeUpdate();
-  }
-
-  @Test
-  public void contentGroup_notUpdated_statusNotChanged() throws Exception {
-    ContentGroup group = new ContentGroup("test");
-
-    group.setEnabled(true);
-    group.setEnabled(false);
-    group.setEnabled(false);
-
-    verify(stmt, times(2)).executeUpdate();
-    assertThat(group.isEnabled()).isFalse();
-  }
-
   @Test
   public void contentGroup_updated_statusChanged() throws Exception {
-    ContentGroup group = new ContentGroup("test");
+    ContentGroup group = ContentGroup.getByID(1L);
 
     group.setEnabled(false);
     group.setEnabled(true);
     group.setEnabled(false);
 
-    verify(stmt, times(4)).executeUpdate();
+    verify(stmt, times(3)).executeUpdate();
     assertThat(group.isEnabled()).isFalse();
   }
 

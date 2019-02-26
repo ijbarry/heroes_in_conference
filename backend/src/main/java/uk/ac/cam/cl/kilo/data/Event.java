@@ -76,7 +76,8 @@ public class Event {
                   + START_FIELD
                   + ", "
                   + END_FIELD
-                  + ") VALUES (?, ?, ?, ?)");
+                  + ") VALUES (?, ?, ?, ?)",
+              PreparedStatement.RETURN_GENERATED_KEYS);
       stmt.setString(1, name);
       stmt.setString(2, desc);
       stmt.setTimestamp(3, Timestamp.from(start));
@@ -84,7 +85,7 @@ public class Event {
       stmt.executeUpdate();
       ResultSet rs = stmt.getGeneratedKeys();
       if (!rs.first()) throw new DatabaseException("Failed to generate ID for event");
-      id = rs.getLong(ID_FIELD);
+      id = rs.getLong(1);
     } catch (SQLException e) {
       throw new DatabaseException(e);
     }
@@ -200,6 +201,57 @@ public class Event {
       stmt.setLong(3, id);
       stmt.executeUpdate();
       // Only update if transaction is successful
+      this.start = start;
+      this.end = end;
+    } catch (SQLException e) {
+      throw new DatabaseException(e);
+    }
+  }
+
+  /**
+   * @param name the new name for the event
+   * @param desc the new description for the event
+   * @param start the new start time for the event
+   * @param end the new end time for the event
+   * @throws IllegalArgumentException if the name is null or empty, or the timings are invalid
+   * @throws DatabaseException if the event could not be updated
+   */
+  public void set(String name, String desc, Instant start, Instant end) throws DatabaseException {
+    if (name == null || name.equals(""))
+      throw new IllegalArgumentException("Name must not be null or empty");
+    if (desc == null) desc = "";
+    if (start == null || end == null)
+      throw new IllegalArgumentException("The start and end times must not be null");
+    if (start.isAfter(end)) throw new IllegalArgumentException("Event ends before it starts");
+    if (this.name.equals(name)
+        && this.desc.equals(desc)
+        && this.start.equals(start)
+        && this.end.equals(end)) return;
+    try (Connection conc = Database.getInstance().getConnection()) {
+      PreparedStatement stmt =
+          conc.prepareStatement(
+              "UPDATE "
+                  + TABLE
+                  + " SET "
+                  + NAME_FIELD
+                  + " = ?, "
+                  + DESC_FIELD
+                  + " = ?, "
+                  + START_FIELD
+                  + " = ?, "
+                  + END_FIELD
+                  + " = ? WHERE "
+                  + ID_FIELD
+                  + " = ?");
+      stmt.setString(1, name);
+      stmt.setString(2, desc);
+      stmt.setTimestamp(3, Timestamp.from(start));
+      stmt.setTimestamp(4, Timestamp.from(end));
+      stmt.setLong(5, id);
+      stmt.executeUpdate();
+      // Only update if transaction is successful
+      this.name = name;
+      this.desc = desc;
       this.start = start;
       this.end = end;
     } catch (SQLException e) {

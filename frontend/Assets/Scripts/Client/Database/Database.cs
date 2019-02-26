@@ -67,6 +67,13 @@ public class Database {
 
     #region Maps
     private Dictionary<long, DBMap> maps;
-
+    public List<DBMap> GetMaps() {
+        return new List<DBMap>(maps.Values);
+    }
+    public void SetAllMaps(List<DBMap> allMaps) {
+        foreach(DBMap map in allMaps) {
+            maps.Add(map.MapID, map);
+        }
+    }
     #endregion
 }

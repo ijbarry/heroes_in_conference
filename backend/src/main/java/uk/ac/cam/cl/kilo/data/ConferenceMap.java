@@ -53,7 +53,8 @@ public class ConferenceMap {
     try (Connection conc = Database.getInstance().getConnection()) {
       PreparedStatement stmt =
           conc.prepareStatement(
-              "INSERT INTO " + TABLE + "(" + NAME_FIELD + ", " + IMAGE_FIELD + ") VALUES (?, ?)");
+              "INSERT INTO " + TABLE + "(" + NAME_FIELD + ", " + IMAGE_FIELD + ") VALUES (?, ?)",
+              PreparedStatement.RETURN_GENERATED_KEYS);
       stmt.setString(1, name);
       stmt.setString(2, image.toString());
       stmt.executeUpdate();
